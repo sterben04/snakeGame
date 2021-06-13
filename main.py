@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 import time
+import random
 
 SIZE = 40  #size of block
 COLOR =  (100,155,80)
@@ -8,12 +9,19 @@ COLOR =  (100,155,80)
 class Game:
     def __init__(self) -> None:
         pygame.init()
-        self.surface = pygame.display.set_mode((500,500))
+        self.surface = pygame.display.set_mode((800,600))
         self.surface.fill(COLOR)  #color of window
-        self.snake = Snake(self.surface,3)
+        self.snake = Snake(self.surface,1)
         self.snake.draw()
         self.apple = Apple(self.surface)
         self.apple.draw()
+
+    def is_collision(self, x1, y1, x2, y2):
+        if x1 >= x2  and x1 < x2+SIZE:
+            if y1 >= y2 and y1 < y2+SIZE:
+                return True
+        return False
+
 
     def run(self):
         running = True
@@ -34,11 +42,16 @@ class Game:
                 elif event.type == QUIT:
                     running = False
             self.play()
-            time.sleep(0.2)
+            time.sleep(0.18)
         
     def play(self):
         self.snake.walk()
         self.apple.draw()
+
+        if self.is_collision(self.snake.x[0],self.snake.y[0], self.apple.x, self.apple.y):
+            self.snake.increase_lenght()
+            self.apple.move()
+
 
 class Snake:
     def __init__(self, parent_screen, length) -> None:
@@ -47,12 +60,21 @@ class Snake:
         self.block = pygame.image.load("resources/block.jpg").convert()
         self.x, self.y = [SIZE]*length, [SIZE]*length
         self.direction = 'right'
+
+        self.x = [SIZE]*length
+        self.y = [SIZE]*length
     
     def draw(self):
             self.parent_screen.fill(COLOR)  #color of window. it also helps in clearing the screen before moving the block
             for i in range(self.length):
                 self.parent_screen.blit(self.block,(self.x[i],self.y[i]))  #drawing block in position (x,y)
             pygame.display.flip()   #Applies it to window
+
+    def increase_lenght(self):
+        self.length += 1
+        self.x.append(-1)
+        self.y.append(-1)
+
     def move_up(self):
         self.direction = 'up'
         
@@ -94,6 +116,10 @@ class Apple:
     def draw(self):
         self.parent_screen.blit(self.image,(self.x, self.y))
         pygame.display.flip()
+
+    def move(self):
+        # window_size/size
+        self.x, self.y = random.randint(0,20)*SIZE, random.randint(0,15)*SIZE
 
 if __name__ == "__main__":
     game = Game()

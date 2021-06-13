@@ -12,8 +12,8 @@ class Game:
         self.surface.fill(COLOR)  #color of window
         self.snake = Snake(self.surface,3)
         self.snake.draw()
-        self.apple = Apple(self.surface)
-        self.apple.draw()
+        self.sasuke = Sasuke(self.surface)
+        self.sasuke.draw()
 
     def run(self):
         running = True
@@ -38,7 +38,7 @@ class Game:
         
     def play(self):
         self.snake.walk()
-        self.apple.draw()
+        self.sasuke.draw()
 
 class Snake:
     def __init__(self, parent_screen, length) -> None:
@@ -85,10 +85,10 @@ class Snake:
         
 
 
-class Apple:
+class Sasuke:
     def __init__(self, parent_Screen) -> None:
         self.parent_screen = parent_Screen
-        self.image = pygame.image.load("resources/apple.jpg").convert()
+        self.image = pygame.image.load("resources/sasuke.png").convert()
         self.x, self.y = 120,120      #multiple of size
 
     def draw(self):

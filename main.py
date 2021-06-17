@@ -9,12 +9,18 @@ COLOR =  (100,155,80)
 class Game:
     def __init__(self) -> None:
         pygame.init()
+        pygame.display.set_caption("does snake eat apples??")
+        pygame.mixer.init()
         self.surface = pygame.display.set_mode((800,600))
-        self.surface.fill(COLOR)  #color of window
+        # self.surface.fill(COLOR)  #color of window
         self.snake = Snake(self.surface,1)
         self.snake.draw()
         self.apple = Apple(self.surface)
         self.apple.draw()
+
+    def background_image(self):
+        bg = pygame.image.load("resources/background.jpg")
+        self.surface.blit(bg, (0,0))
 
     def display_score(self):
         font = pygame.font.SysFont('arial',30)
@@ -29,7 +35,8 @@ class Game:
 
 
     def game_over(self):
-        self.surface.fill(COLOR)
+        # self.surface.fill(COLOR
+        self.background_image()
         font = pygame.font.SysFont('arial',30)
         over = font.render(f"Game Over! Your Score is {self.snake.length}", True, (255,150,255))
         self.surface.blit(over, (200,200))
@@ -38,8 +45,9 @@ class Game:
         self.surface.blit(play_again, (200,250))
         pygame.display.flip()
 
+
     def reset(self):
-        self.surface.fill(COLOR)  #color of window
+        # self.surface.fill(COLOR)  #color of window
         self.snake = Snake(self.surface,1)
         self.apple = Apple(self.surface)
 
@@ -50,7 +58,7 @@ class Game:
         running = True
         while running:
             for event in pygame.event.get():
-                if event.type == KEYDOWN: #keypress
+                if event.type == KEYDOWN:         #keypress
                     if event.key == K_RETURN:
                         pause = False
                     if event.key == K_ESCAPE:
@@ -58,16 +66,15 @@ class Game:
                     if not pause:
                         if event.key == K_UP:
                             self.snake.move_up()
-                        if event.key == K_DOWN:
+                        elif event.key == K_DOWN:
                             self.snake.move_down()
-                        if event.key == K_RIGHT:
+                        elif event.key == K_RIGHT:
                             self.snake.move_right()
-                        if event.key == K_LEFT:
+                        elif event.key == K_LEFT:
                             self.snake.move_left()
 
                 elif event.type == QUIT:
                     running = False
-            # self.play()
 
             try:
                 if not pause:
@@ -76,22 +83,25 @@ class Game:
                 self.game_over()
                 pause =True
                 self.reset()
-            time.sleep(0.18)
+            time.sleep(.23)
         
     def play(self):
+        self.background_image()
         self.snake.walk()
         self.apple.draw()
         self.display_score()
         pygame.display.flip()
 
         #sanke collides with apple
-        if self.is_collision(self.snake.x[0],self.snake.y[0], self.apple.x, self.apple.y):
+        if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.snake.increase_lenght()
             self.apple.move()
 
         #snake hurts himself
         for i in range(2,self.snake.length):
             if self.is_collision(self.snake.x[0],self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+                sound = pygame.mixture.sound(f"resources/crash.mp3")
+                pygame.mixer.Sound.play(sound)
                 raise Exception
 
 
@@ -103,14 +113,13 @@ class Snake:
         self.x, self.y = [SIZE]*length, [SIZE]*length
         self.direction = 'right'
 
-        self.x = [SIZE]*length
-        self.y = [SIZE]*length
+
     
     def draw(self):
-            self.parent_screen.fill(COLOR)  #color of window. it also helps in clearing the screen before moving the block
-            for i in range(self.length):
-                self.parent_screen.blit(self.block,(self.x[i],self.y[i]))  #drawing block in position (x,y)
-            pygame.display.flip()   #Applies it to window
+        # self.parent_screen.fill(COLOR)  #color of window. it also helps in clearing the screen before moving the block
+        for i in range(self.length):
+            self.parent_screen.blit(self.block,(self.x[i],self.y[i]))  #drawing block in position (x,y)
+        pygame.display.flip()   #Applies it to window
 
     def increase_lenght(self):
         self.length += 1
@@ -167,11 +176,4 @@ if __name__ == "__main__":
     game = Game()
     game.run()
 
-    
-   
-
-    
-   
-
-    # pygame.display.flip()   #Applies it to window
 
